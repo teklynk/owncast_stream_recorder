@@ -6,18 +6,25 @@ You can set up this script as a cron job on your server, home PC, or NAS to auto
 
 # Setup
 
-1. Make the script executable:
+1. Modify the script for your environment
+```bash
+# Configuration variables
+API_URL="https://<owncast-server>/api/status"
+M3U8_STREAM_URL="https://<owncast-server>/hls/0/stream.m3u8"
+RECORDINGS_DIR="<path-to-store-recordings>"
+```
 
+2. Make the script executable:
 ```bash
 chmod +x /path/to/owncast_stream_recorder.sh
 ```
 
-2. Add the script to your crontab to run on system boot:
+3. Add the script to your crontab to run on system boot:
 ```bash
 crontab -e
 ```
 
-3. Add the following line to the crontab file:
+4. Add the following line to the crontab file:
 ```bash
 @reboot /path/to/owncast_stream_recorder.sh
 ```
