@@ -27,10 +27,22 @@ stop_recording() {
         if kill -0 $pid 2>/dev/null; then
             kill $pid
             rm /tmp/ffmpeg_pid
+            manage_recordings
         else
             echo "Recording process $pid not found. It may have already ended."
             rm /tmp/ffmpeg_pid
         fi
+    fi
+}
+
+# Function to manage recordings
+manage_recordings() {
+    recordings=($(ls -t "${RECORDINGS_DIR}/recording_*.mp4"))
+    if [ ${#recordings[@]} -gt 3 ]; then
+        for ((i=3; i<${#recordings[@]}; i++)); do
+            rm "${recordings[$i]}"
+            echo "Deleted old recording: ${recordings[$i]}"
+        done
     fi
 }
 
