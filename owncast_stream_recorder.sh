@@ -27,12 +27,12 @@ stop_recording() {
         if kill -0 $pid 2>/dev/null; then
             kill $pid
             rm /tmp/ffmpeg_pid
-            manage_recordings
         else
             echo "Recording process $pid not found. It may have already ended."
             rm /tmp/ffmpeg_pid
         fi
     fi
+    manage_recordings
 }
 
 # Function to manage recordings
