@@ -37,11 +37,18 @@ stop_recording() {
 
 # Function to manage recordings
 manage_recordings() {
-    recordings=($(ls -t "${RECORDINGS_DIR}/recording_*.mp4"))
-    if [ ${#recordings[@]} -gt 3 ]; then
-        for ((i=3; i<${#recordings[@]}; i++)); do
+    cd "$RECORDINGS_DIR" || { echo "Directory not found: $RECORDINGS_DIR"; return 1; }
+
+    echo "Looking for files in $RECORDINGS_DIR"
+
+    recordings=($(ls -t recording_*.mp4))
+    
+    echo "Found ${#recordings[@]} recordings."
+
+    if [ ${#recordings[@]} -gt 6 ]; then
+        for ((i=6; i<${#recordings[@]}; i++)); do
+            echo "Deleting: ${recordings[$i]}"
             rm "${recordings[$i]}"
-            echo "Deleted old recording: ${recordings[$i]}"
         done
     fi
 }
