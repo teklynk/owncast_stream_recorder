@@ -4,6 +4,7 @@
 API_URL="https://<owncast-server>/api/status"
 M3U8_STREAM_URL="https://<owncast-server>/hls/0/stream.m3u8"
 RECORDINGS_DIR="<path-to-store-recordings>"
+FILE_NAME_PREFIX="stream_"
 
 # Function to check if stream is online
 is_stream_online() {
@@ -15,7 +16,7 @@ is_stream_online() {
 # Function to start recording
 start_recording() {
     timestamp=$(date +"%Y%m%d_%H%M%S")
-    output_file="${RECORDINGS_DIR}/recording_${timestamp}.mp4"
+    output_file="${RECORDINGS_DIR}/${FILE_NAME_PREFIX}${timestamp}.mp4"
     ffmpeg -i "$M3U8_STREAM_URL" -c copy "$output_file" &
     echo $! > /tmp/ffmpeg_pid
 }
@@ -43,7 +44,7 @@ manage_recordings() {
 
     echo "Looking for files in $RECORDINGS_DIR"
 
-    recordings=($(ls -t recording_*.mp4))
+    recordings=($(ls -t *.mp4))
     
     echo "Found ${#recordings[@]} recordings."
 
