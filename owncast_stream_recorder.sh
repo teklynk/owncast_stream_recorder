@@ -17,7 +17,7 @@ is_stream_online() {
 start_recording() {
     timestamp=$(date +"%Y%m%d_%H%M%S")
     output_file="${RECORDINGS_DIR}/${FILE_NAME_PREFIX}${timestamp}.mp4"
-    ffmpeg -i "$M3U8_STREAM_URL" -c copy "$output_file" &
+    ffmpeg -analyzeduration 1000000 -probesize 1500000 -i "$M3U8_STREAM_URL" -c copy "$output_file" &
     echo $! > /tmp/ffmpeg_pid
 }
 
