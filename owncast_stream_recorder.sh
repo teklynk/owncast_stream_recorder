@@ -17,8 +17,13 @@ is_stream_online() {
 start_recording() {
     timestamp=$(date +"%Y%m%d_%H%M%S")
     output_file="${RECORDINGS_DIR}/${FILE_NAME_PREFIX}${timestamp}.mp4"
-    ffmpeg -analyzeduration 1000000 -probesize 1500000 -i "$M3U8_STREAM_URL" -c copy "$output_file" &
-    echo $! > /tmp/ffmpeg_pid
+    ffmpeg_pid=$(ffmpeg -y -re -i "$M3U8_STREAM_URL" -c:v copy -c:a copy -f mp4 "$output_file" 2>&1 >/dev/null & echo $!)
+    echo "ffmpeg process started with PID $ffmpeg_pid"
+    wait $ffmpeg_pid
+    if [ $? -ne 0 ]; then
+        echo "Error: ffmpeg process failed with exit code $?"
+    fi
+    rm /tmp/ffmpeg_pid
 }
 
 # Function to stop recording
