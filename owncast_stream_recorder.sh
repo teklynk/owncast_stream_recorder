@@ -65,35 +65,37 @@ remux_videos() {
     cd "$RECORDINGS_DIR" || { echo "Directory not found: $RECORDINGS_DIR"; return 1; }
     echo "Looking for files in $RECORDINGS_DIR"
 
-    # Loop through all mp4 files sorted by modification time
-    for file in *.mp4; do
-        if [ -f "$file" ]; then
-            echo "Processing $file..."
-            # Define the output file name for the re-muxed video
-            temp_file="${file%.mp4}_temp.mp4"
+    # Get the most recent recorded file
+    latest_file=$(ls -t *.mp4 | head -n 1)
 
-            # Re-mux the file to ensure metadata is at the beginning
-            ffmpeg -i "$file" -c copy -movflags +faststart "$temp_file"
+    if [ -f "$latest_file" ]; then
+        echo "Processing $latest_file..."
+        # Define the output file name for the re-muxed video
+        temp_file="${latest_file%.mp4}_temp.mp4"
 
-            # Check if the re-muxing was successful
-            if [ $? -eq 0 ]; then
-                echo "Successfully re-muxed $file to $temp_file"
-                # Remove the original file and rename the re-muxed file
-                rm "$file"
-                mv "$temp_file" "$file"
-            else
-                echo "Failed to re-mux $file"
-                # Remove the temporary file if re-muxing failed
-                rm "$temp_file"
-            fi
+        # Re-mux the file to ensure metadata is at the beginning
+        ffmpeg -i "$latest_file" -c copy -movflags +faststart "$temp_file"
+
+        # Check if the re-muxing was successful
+        if [ $? -eq 0 ]; then
+            echo "Successfully re-muxed $latest_file to $temp_file"
+            # Remove the original file and rename the re-muxed file
+            rm "$latest_file"
+            mv "$temp_file" "$latest_file"
+        else
+            echo "Failed to re-mux $latest_file"
+            # Remove the temporary file if re-muxing failed
+            rm "$temp_file"
         fi
-    done
+    fi
 }
 
 # Main loop
 while true; do
     if is_stream_online; then
-        if [ ! -f /tmp/ffmpeg_pid ]; then
+        if [ -f /tmp/ffmpeg_pid ]; then
+            echo "Stream is online and recording is already running..."
+        else
             echo "Stream is online. Waiting 30 seconds before starting recording..."
             sleep 30
             if is_stream_online; then  # Check again to ensure the stream is still online after waiting
